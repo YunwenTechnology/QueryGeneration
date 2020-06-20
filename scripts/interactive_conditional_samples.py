@@ -1,16 +1,13 @@
 import sys
 import os
 import argparse
-import json
-import re
 sys.path.append('/iyunwen/lcong/QueryGeneration')
 import tensorflow as tf
 import numpy as np
 
-from train.modeling import GroverModel, GroverConfig, sample
+from train.modeling import GroverConfig, sample
 from tokenization import tokenization
 
-##### ignore tf deprecated warning temporarily
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -23,21 +20,10 @@ try:
 except ImportError:
     from tensorflow.python.util import deprecation_wrapper as deprecation
 deprecation._PER_MODULE_WARNING_LIMIT = 0
-#####
+
 
 parser = argparse.ArgumentParser(description='Contextual generation (aka given some metadata we will generate articles')
-parser.add_argument(
-    '-metadata_fn',
-    dest='metadata_fn',
-    type=str,
-    help='Path to a JSONL containing metadata',
-)
-parser.add_argument(
-    '-out_fn',
-    dest='out_fn',
-    type=str,
-    help='Out jsonl, which will contain the completed jsons',
-)
+
 parser.add_argument(
     '-input',
     dest='input',
@@ -59,33 +45,13 @@ parser.add_argument(
     help='checkpoint file for the model',
 )
 parser.add_argument(
-    '-target',
-    dest='target',
-    default='article',
-    type=str,
-    help='What to generate for each item in metadata_fn. can be article (body), title, etc.',
-)
-parser.add_argument(
     '-batch_size',
     dest='batch_size',
     default=1,
     type=int,
     help='How many things to generate per context. will split into chunks if need be',
 )
-parser.add_argument(
-    '-num_folds',
-    dest='num_folds',
-    default=1,
-    type=int,
-    help='Number of folds. useful if we want to split up a big file into multiple jobs.',
-)
-parser.add_argument(
-    '-fold',
-    dest='fold',
-    default=0,
-    type=int,
-    help='which fold we are on. useful if we want to split up a big file into multiple jobs.'
-)
+
 parser.add_argument(
     '-max_batch_size',
     dest='max_batch_size',
@@ -96,7 +62,7 @@ parser.add_argument(
 parser.add_argument(
     '-top_p',
     dest='top_p',
-    default=4.0,
+    default=5.0,
     type=float,
     help='p to use for top p sampling. if this isn\'t none, use this for everthing'
 )
@@ -192,11 +158,9 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
             context_formatted = []
             context_formatted.extend(encoded)
             # Format context end
-
             gens = []
             gens_raw = []
             gen_probs = []
-
             for chunk_i in range(num_chunks):
                 tokens_out, probs_out = sess.run([tokens, probs],
                                                  feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,

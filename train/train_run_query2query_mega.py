@@ -1,11 +1,3 @@
-"""
-@author: liucong
-@contact: logcongcong@gmail.com
-@time: 2020/6/2 16:27
-"""
-
-""" Training script! """
-
 import tensorflow as tf
 import sys
 import os

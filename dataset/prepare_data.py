@@ -1,12 +1,5 @@
-"""
-Turn a merged corpus into tfrecord files.
-
-NOTE: You will want to do this using several processes. I did this on an AWS machine with 72 CPUs using GNU parallel
-as that's where I had the deduplicated RealNews dataset.
-"""
 import argparse
 import ujson as json
-# from sample.encoder import get_encoder, tokenize_for_grover_training, detokenize, sliding_window, create_int_feature
 import random
 import tensorflow as tf
 import collections
@@ -15,6 +8,7 @@ import sys
 from tempfile import TemporaryDirectory
 sys.path.append('/iyunwen/lcong/QueryGeneration')
 from tokenization import tokenization
+
 
 parser = argparse.ArgumentParser(description='SCRAPE!')
 parser.add_argument(
@@ -65,8 +59,7 @@ parser.add_argument(
 args = parser.parse_args()
 random.seed(args.seed + args.fold)
 
-tokenizer = tokenization.FullTokenizer(
-    vocab_file="/home/nlp/lcong/gpt2-ml-finetune/tokenization/bert-base-chinese-vocab.txt", do_lower_case=True)
+tokenizer = tokenization.FullTokenizer(vocab_file="../tokenization/bert-base-chinese-vocab.txt", do_lower_case=True)
 
 class S3TFRecordWriter(object):
     def __init__(self, fn):

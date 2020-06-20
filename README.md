@@ -6,7 +6,7 @@
 | [百度云盘](https://pan.baidu.com/s/1vgB5AorQZQ5VYi91pm44bg)  | mho5  |
 
 详细介绍请看：
-[知乎链接](https://zhuanlan.zhihu.com/p/149429784)
+https://zhuanlan.zhihu.com/p/149429784
 
 # 训练环境
 tensorflow 1.14.0
